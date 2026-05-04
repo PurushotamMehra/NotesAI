@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+**/__pycache__/
+*.pyc
+.env
+.venv/
+
+# Django
+db.sqlite3
+
+# Flutter
+.dart_tool/
+.build/
+build/
+ios/Pods/
+android/.gradle/
+
+# Node (if used later)
+node_modules/
+
+# AI internal memory
+/docs/PROJECT_CONTEXT.md
+
+# OS
+.DS_Store
