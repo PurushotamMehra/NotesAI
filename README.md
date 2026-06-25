@@ -1,10 +1,10 @@
-# Second Brain AI
+# NotesAI
 
 A mobile-first AI notes and personal knowledge management app with semantic search, memory retrieval, and chat over saved notes.
 
 ## Overview
 
-Second Brain AI is a personal memory app for quickly capturing thoughts and turning them into searchable, structured notes. The project pairs a Flutter mobile interface with a Django REST API that stores notes, enriches them with AI when providers are configured, and supports semantic retrieval through PostgreSQL with pgvector.
+NotesAI is a personal memory app for quickly capturing thoughts and turning them into searchable, structured notes. The project pairs a Flutter mobile interface with a Django REST API that stores notes, enriches them with AI when providers are configured, and supports semantic retrieval through PostgreSQL with pgvector.
 
 The goal is to explore a practical "AI memory" workflow: capture lightweight notes, extract useful context such as summaries, people, topics, and follow-up questions, then retrieve those memories later through search or chat.
 
@@ -143,7 +143,7 @@ flutter test
 ## Project Structure
 
 ```text
-second-brain/
+NotesAI/
   backend/                 Django project, REST API, models, migrations, AI services
     notes/                 Notes app with API views, serializers, tests, and services
     second_brain_backend/  Django settings and URL configuration
