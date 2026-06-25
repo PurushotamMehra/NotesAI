@@ -1,59 +1,85 @@
 # Second Brain AI
 
-Second Brain AI is a mobile-first personal AI memory system for capturing notes, structuring them with AI, extracting people and topics, and eventually chatting with stored memories through RAG.
+A mobile-first AI notes and personal knowledge management app with semantic search, memory retrieval, and chat over saved notes.
 
-## Stack
+## Overview
 
-- Frontend: Flutter
-- Backend: Django and Django REST Framework
-- Database: PostgreSQL
-- Vector search: pgvector
-- AI: External LLM and embeddings APIs
+Second Brain AI is a personal memory app for quickly capturing thoughts and turning them into searchable, structured notes. The project pairs a Flutter mobile interface with a Django REST API that stores notes, enriches them with AI when providers are configured, and supports semantic retrieval through PostgreSQL with pgvector.
 
-## Folder Structure
+The goal is to explore a practical "AI memory" workflow: capture lightweight notes, extract useful context such as summaries, people, topics, and follow-up questions, then retrieve those memories later through search or chat.
 
-```text
-second-brain/
-  mobile/        Flutter app
-  backend/       Django project and API
-  docs/          Documentation
-  AGENTS.md      Agent operating instructions
-  README.md      Project overview
-  .gitignore     Ignore rules
+## Key Features
+
+- Capture text notes from a mobile app and send them to a backend REST API.
+- Store original note text, cleaned note text, summaries, processing status, and embedding status.
+- Extract people, topics, and follow-up questions from notes through an external chat-completions style AI provider.
+- Generate embeddings through Gemini or OpenAI-compatible embedding endpoints.
+- Run semantic search against pgvector embeddings in PostgreSQL.
+- Ask questions over saved notes with retrieved source snippets and chat session history.
+- Continue working locally even without AI keys: note ingestion falls back to storing the raw note when AI processing is unavailable.
+- Track AI calls, latency, success/failure, and related note or chat message metadata.
+
+## How It Works
+
+The Flutter app in `mobile/` provides screens for adding memories, viewing notes, searching memories, and chatting with saved notes. It uses the `http` package to call the backend and reads the API base URL from the `API_BASE_URL` Dart define, defaulting to `http://10.0.2.2:8000` for Android emulator development.
+
+The Django backend in `backend/` exposes API routes under `/api/` for notes, search, reprocessing, and chat. Notes are stored in PostgreSQL with structured metadata and a pgvector embedding column. When note processing runs, the backend calls configured external AI services for note cleanup, summaries, entities, follow-up questions, embeddings, retrieval query rewriting, and chat answers.
+
+Semantic search generates an embedding for the query, compares it against stored note embeddings with pgvector distance ordering, and returns the closest matching notes. Chat builds on the same retrieval path, adds recent session history for query rewriting, and returns an answer with source note previews.
+
+## Setup
+
+### Prerequisites
+
+- Python 3.11 or newer
+- Flutter with a compatible Dart SDK
+- Docker Compose, or a local PostgreSQL 16 database with pgvector
+- Android emulator/device or another Flutter target for running the mobile app
+
+### Environment Variables
+
+Create a local backend environment file from the example:
+
+```bash
+cd backend
+cp .env.example .env
 ```
 
-## Backend Setup
+`backend/.env` is ignored by Git. The example values target the Docker Compose PostgreSQL service on `localhost:55432`.
+
+Important variables:
+
+- `DJANGO_SECRET_KEY`, `DJANGO_DEBUG`, `DJANGO_ALLOWED_HOSTS`
+- `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_HOST`, `POSTGRES_PORT`
+- `AI_API_KEY`, `AI_BASE_URL`, `AI_MODEL`
+- `EMBEDDING_API_KEY`, `EMBEDDING_BASE_URL`, `EMBEDDING_MODEL`, `EMBEDDING_DIMENSIONS`
+
+AI keys may be left blank for basic local development, but semantic search and chat answers require embeddings and AI provider configuration.
+
+### Database With Docker
+
+From the repository root:
+
+```bash
+docker compose up -d postgres
+```
+
+The Compose service uses `pgvector/pgvector:pg16`, creates the `second_brain` database, and exposes PostgreSQL on `localhost:55432`. The migration `notes.0003_enable_pgvector` enables the `vector` extension.
+
+### Backend
 
 ```bash
 cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env
-cd ..
-docker compose up -d postgres
-cd backend
 python manage.py migrate
 python manage.py runserver
 ```
 
-The backend expects PostgreSQL with pgvector. Configure database values in `backend/.env`.
+The API will be available at `http://127.0.0.1:8000/api/`.
 
-For full PostgreSQL, pgvector, migration, and test commands, see [docs/backend-setup.md](docs/backend-setup.md).
-
-Useful backend commands:
-
-```bash
-docker compose up -d postgres
-cd backend
-python manage.py migrate
-python manage.py check
-python manage.py test
-```
-
-Use `docker-compose` in place of `docker compose` on machines with Docker Compose v1.
-
-## Mobile Setup
+### Mobile App
 
 ```bash
 cd mobile
@@ -61,4 +87,85 @@ flutter pub get
 flutter run
 ```
 
-The Flutter app is intentionally minimal and currently contains placeholder screens for note input, notes list, and chat.
+For an Android emulator, the default API URL is usually correct. For a physical device, pass a reachable backend URL:
+
+```bash
+flutter run --dart-define API_BASE_URL=http://YOUR_LAN_IP:8000
+```
+
+The repo also includes a helper script that starts the database, runs Django, applies migrations, and launches Flutter:
+
+```bash
+scripts/run_android_dev.sh emulator
+scripts/run_android_dev.sh device
+```
+
+## Development Commands
+
+Run the backend:
+
+```bash
+cd backend
+source .venv/bin/activate
+python manage.py runserver
+```
+
+Run migrations:
+
+```bash
+cd backend
+python manage.py migrate
+```
+
+Run backend checks and tests:
+
+```bash
+cd backend
+python manage.py check
+python manage.py test notes
+```
+
+Run the mobile app:
+
+```bash
+cd mobile
+flutter run
+```
+
+Analyze and test Flutter code:
+
+```bash
+cd mobile
+flutter analyze
+flutter test
+```
+
+## Project Structure
+
+```text
+second-brain/
+  backend/                 Django project, REST API, models, migrations, AI services
+    notes/                 Notes app with API views, serializers, tests, and services
+    second_brain_backend/  Django settings and URL configuration
+  mobile/                  Flutter mobile app
+    lib/screens/           Add, list, search, and chat screens
+    lib/services/          API client
+    lib/widgets/           Reusable UI components
+  docs/                    Additional setup documentation
+  scripts/                 Local development helpers
+  docker-compose.yml       PostgreSQL + pgvector development database
+```
+
+## Current Status
+
+The project currently has a working Django API, PostgreSQL/pgvector schema, AI processing service layer, semantic search endpoint, chat endpoint, Flutter UI screens, and automated tests for the backend and mobile app.
+
+Areas that could be improved next include authentication, richer capture types beyond text, background workers for production-style async processing, stronger mobile state management, deployment configuration, and more complete provider-specific documentation.
+
+## Privacy And Data Handling
+
+This app is designed around personal notes, so local secrets should stay in `backend/.env` and should not be committed. When AI or embedding providers are configured, note content and chat queries may be sent to those external APIs for processing. Review provider policies and avoid storing sensitive personal data unless your environment and provider choices are appropriate for it.
+
+## License
+
+No license file has been added yet.
