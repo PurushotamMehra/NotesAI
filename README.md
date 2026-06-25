@@ -1,12 +1,15 @@
 # NotesAI
 
-A mobile-first AI notes and personal knowledge management app with semantic search, memory retrieval, and chat over saved notes.
+An AI-powered personal knowledge management app built with Flutter, Django REST API, PostgreSQL, pgvector, semantic search, and Retrieval-Augmented Generation over saved notes.
 
 ## Overview
 
-NotesAI is a personal memory app for quickly capturing thoughts and turning them into searchable, structured notes. The project pairs a Flutter mobile interface with a Django REST API that stores notes, enriches them with AI when providers are configured, and supports semantic retrieval through PostgreSQL with pgvector.
+NotesAI is a mobile-first AI memory app that helps users capture personal notes and turn them into searchable, structured knowledge. It combines a Flutter mobile interface with a Django REST backend, PostgreSQL storage, pgvector-based vector search, and external AI providers for note enrichment, embeddings, semantic retrieval, and chat over saved memories.
 
-The goal is to explore a practical "AI memory" workflow: capture lightweight notes, extract useful context such as summaries, people, topics, and follow-up questions, then retrieve those memories later through search or chat.
+The project implements a practical Retrieval-Augmented Generation workflow: user notes are stored, cleaned, summarized, embedded, and later retrieved through semantic search so the AI chat layer can answer questions using the user’s own saved context. Instead of relying only on a model’s general knowledge, NotesAI grounds responses in retrieved note sources, making it closer to a personal second brain or private AI knowledge base.
+
+The goal of the project is to explore how AI can improve personal knowledge management through memory retrieval, vector embeddings, contextual chat, source-backed answers, and structured note understanding while keeping the architecture understandable and developer-friendly.
+
 
 ## Key Features
 
