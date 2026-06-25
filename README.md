@@ -30,22 +30,28 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
+cd ..
+docker compose up -d postgres
+cd backend
 python manage.py migrate
 python manage.py runserver
 ```
 
-The backend expects PostgreSQL. Configure database values in `backend/.env`.
+The backend expects PostgreSQL with pgvector. Configure database values in `backend/.env`.
 
-For a local pgvector database with Docker:
+For full PostgreSQL, pgvector, migration, and test commands, see [docs/backend-setup.md](docs/backend-setup.md).
+
+Useful backend commands:
 
 ```bash
-docker run --name second-brain-postgres-dev \
-  -e POSTGRES_DB=second_brain \
-  -e POSTGRES_USER=second_brain \
-  -e POSTGRES_PASSWORD=second_brain \
-  -p 55432:5432 \
-  -d pgvector/pgvector:pg16
+docker compose up -d postgres
+cd backend
+python manage.py migrate
+python manage.py check
+python manage.py test
 ```
+
+Use `docker-compose` in place of `docker compose` on machines with Docker Compose v1.
 
 ## Mobile Setup
 

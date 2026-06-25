@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../features/chat/chat_screen.dart';
-import '../features/notes/note_input_screen.dart';
-import '../features/notes/notes_list_screen.dart';
+import '../screens/home_screen.dart';
+import '../theme/app_design.dart';
 
 class SecondBrainApp extends StatelessWidget {
   const SecondBrainApp({super.key});
@@ -14,58 +13,27 @@ class SecondBrainApp extends StatelessWidget {
       title: 'Second Brain AI',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF256D5A),
-          brightness: Brightness.light,
+          seedColor: AppColors.greenAccent,
+          surface: AppColors.surface,
+        ),
+        scaffoldBackgroundColor: AppColors.background,
+        fontFamily: 'Roboto',
+        appBarTheme: const AppBarTheme(
+          backgroundColor: AppColors.background,
+          foregroundColor: AppColors.textPrimary,
+          elevation: 0,
+          centerTitle: false,
+        ),
+        snackBarTheme: SnackBarThemeData(
+          backgroundColor: AppColors.textPrimary,
+          contentTextStyle: AppTextStyles.muted.copyWith(
+            color: AppColors.surface,
+          ),
+          behavior: SnackBarBehavior.floating,
         ),
         useMaterial3: true,
       ),
-      home: const AppShell(),
-    );
-  }
-}
-
-class AppShell extends StatefulWidget {
-  const AppShell({super.key});
-
-  @override
-  State<AppShell> createState() => _AppShellState();
-}
-
-class _AppShellState extends State<AppShell> {
-  int _selectedIndex = 0;
-
-  static const _screens = [NoteInputScreen(), NotesListScreen(), ChatScreen()];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Second Brain AI')),
-      body: SafeArea(child: _screens[_selectedIndex]),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.add_circle_outline),
-            selectedIcon: Icon(Icons.add_circle),
-            label: 'Capture',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.library_books_outlined),
-            selectedIcon: Icon(Icons.library_books),
-            label: 'Notes',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.chat_bubble_outline),
-            selectedIcon: Icon(Icons.chat_bubble),
-            label: 'Chat',
-          ),
-        ],
-      ),
+      home: const HomeScreen(),
     );
   }
 }

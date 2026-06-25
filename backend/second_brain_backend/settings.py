@@ -84,6 +84,19 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+AI_API_KEY = os.getenv("AI_API_KEY", "")
+AI_BASE_URL = os.getenv("AI_BASE_URL", "")
+AI_MODEL = os.getenv("AI_MODEL", "")
+EMBEDDING_API_KEY = os.getenv("EMBEDDING_API_KEY") or AI_API_KEY
+EMBEDDING_BASE_URL = os.getenv("EMBEDDING_BASE_URL", "")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "")
+EMBEDDING_DIMENSIONS = int(os.getenv("EMBEDDING_DIMENSIONS", "3072"))
+PROCESS_NOTES_ASYNC = os.getenv("PROCESS_NOTES_ASYNC", "True").lower() in {
+    "1",
+    "true",
+    "yes",
+}
+
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",

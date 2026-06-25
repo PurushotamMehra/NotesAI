@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: second-brain-postgres-dev
+    environment:
+      POSTGRES_DB: second_brain
+      POSTGRES_USER: second_brain
+      POSTGRES_PASSWORD: second_brain
+    ports:
+      - "55432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U second_brain -d second_brain"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
